@@ -23,11 +23,13 @@ namespace Checkout_System
         {
             Console.WriteLine("Checkout:");
             Console.WriteLine("1. New checkout");
-            Console.WriteLine("2. Exit");
+            Console.WriteLine("2. Change file directory");
+            Console.WriteLine("3. Exit");
             string answer = Console.ReadLine();
 
             if (answer == "1") { Checkout(); }
-            else if (answer == "2") { Environment.Exit(0); }
+            else if (answer == "2") { ChangeFileDirectory(); }
+            else if (answer == "3") { Environment.Exit(0); }
             else { Run(); }
         }
 
@@ -80,12 +82,73 @@ namespace Checkout_System
             else
             {
                 ReceiptToFile(products);
+                FileToReceipt(receiptFilePath);
+            }
+        }
+
+        void ChangeFileDirectory()
+        {
+            Console.WriteLine("Enter an existing directory!");
+            Console.WriteLine("Input 'Back' to go to the main menu.");
+            string directory = Console.ReadLine();
+            string filePath = ""; 
+            string fileName;
+
+            if (directory.ToLower() == "back") { Run(); }
+
+            if (Directory.Exists(directory))
+            {
+                Console.WriteLine("Enter a file name:");
+                fileName = Console.ReadLine();
+                try
+                {
+                    File.WriteAllText(directory + "\\" + fileName + ".txt", "");
+                }
+                catch
+                {
+                    Console.WriteLine("Access denied to that directory, choose another one:");
+                    Console.WriteLine(new UnauthorizedAccessException());
+                    ChangeFileDirectory();
+                }
+
+                filePath = directory + "\\" + fileName + ".txt";
+                Console.WriteLine("Directory changed to:");
+                Console.WriteLine(filePath);
+            }
+            else
+            {
+                Console.WriteLine("You must enter a VALID directory that exists!");
+                ChangeFileDirectory();
             }
         }
 
         void ReceiptToFile(List<Product> list)
         {
-            File.WriteAllText(receiptFilePath, "");
+            string stringBuilder = "";
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                stringBuilder += "{\n   ";
+                stringBuilder += list[i].ID + ",\n   ";
+                stringBuilder += list[i].Name + ",\n";
+                stringBuilder += "}";
+
+                if (list.Count > 1 && i + 1 < list.Count) { stringBuilder += ",\n"; }
+            }
+
+            File.WriteAllText(receiptFilePath, stringBuilder);
+        }
+
+        void FileToReceipt(string filePath)
+        {
+            string fileContent = File.ReadAllText(filePath);
+
+            fileContent = fileContent.Replace("},", "");
+            fileContent = fileContent.Replace("}", "");
+            fileContent = fileContent.Replace("{", "");
+            fileContent = fileContent.Replace("\n", "");
+
+            Console.WriteLine(fileContent);
         }
     }
 }
