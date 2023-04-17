@@ -6,149 +6,97 @@ using System.Threading.Tasks;
 
 namespace Checkout_System
 {
-    internal class App
+    public class App
     {
         string receiptFilePath = "C:\\Users\\Matti\\OneDrive\\Skrivbord\\RECEIPT" + DateTime.Today.ToString("yyyyMMdd") + ".txt";
         string productsFilePath = "C:\\Users\\Matti\\OneDrive\\Skrivbord\\" + "Products" + ".txt";
-        List<Product> products = new List<Product>();
+        List<Product> allProducts = new List<Product>();
+        List<ReceiptObject> receiptProducts = new List<ReceiptObject>();
+        Receipt receipt;
 
         public App()
         {
+            receipt = new Receipt(receiptProducts);
             Product banana = new Product(1, 25, Product.PriceTypes.PricePerKG, "Banana");
             Product apple = new Product(2, 30, Product.PriceTypes.PricePerKG, "Apple");
-            AddProductToList(banana);
-            AddProductToList(apple);
+            Admin.AddProductToList(banana, allProducts);
+            Admin.AddProductToList(apple, allProducts);
         }
         public void Run()
         {
             Console.WriteLine("Checkout:");
             Console.WriteLine("1. New checkout");
             Console.WriteLine("2. Change file directory");
-            Console.WriteLine("3. Exit");
+            Console.WriteLine("3. Admin page");
+            Console.WriteLine("4. Exit");
             string answer = Console.ReadLine();
 
             if (answer == "1") { Checkout(); }
-            else if (answer == "2") { ChangeFileDirectory(); }
-            else if (answer == "3") { Environment.Exit(0); }
-            else { Run(); }
-        }
-
-        void AddProductToList(Product product)
-        {
-            foreach (Product p in products)
+            else if (answer == "2")
             {
-                if (product.ID == p.ID)
-                {
-                    throw new Exception("Product ID already exists!");
-                }
-
-                else if (product.Name == p.Name)
-                {
-                    throw new Exception("Product name already exists!");
-                }
-
-                else
-                {
-                    products.Add(product);
-                    return;
-                }
+                string s = FileAndFormat.ChangeFileDirectory();
+                if (s.ToLower() == "back") { Run(); }
             }
-
-            products.Add(product);
+            else if (answer == "3") {  }
+            else if (answer == "4") { Environment.Exit(0); }
+            else { Run(); }
         }
 
         void Checkout()
         {
             Console.WriteLine("Checkout");
-            Console.WriteLine("Add products below: <product id> <quantity>");
-            string answer = Console.ReadLine();
-            string[] answerSplit;
-
-            if (answer.ToLower() != "pay")
+            while (true)
             {
-                answerSplit = answer.Split(" ");
+                Console.WriteLine("Add products below: <product id> <quantity>");
+                string answer = Console.ReadLine();
+                string[] answerSplit;
+                Product prod = null;
 
-                try
+                if (answer.ToLower() != "pay")
                 {
-                    int id = Convert.ToInt32(answerSplit[0]);
-                    int quantity = Convert.ToInt32(answerSplit[1]);
+                    answerSplit = answer.Split(" ");
+
+                    try
+                    {
+                        int id = Convert.ToInt32(answerSplit[0]);
+                        int quantity = Convert.ToInt32(answerSplit[1]);
+                        bool productExists = false;
+
+                        allProducts.ForEach(p =>
+                        {
+                            if (p.ID == id)
+                            {
+                                productExists = true;
+                                prod = new Product(p.ID, p.Price, p.PriceType, p.Name);
+                            }
+                        });
+
+                        if (!productExists)
+                        {
+                            Console.WriteLine("Could not find any product with the given id!");
+                        }
+                        else if (prod != null)
+                        {
+                            receiptProducts.Add(new ReceiptObject(prod, quantity));
+                            Console.WriteLine($"Added {quantity} {prod.Name}(s)");
+                        }
+                    }
+                    catch
+                    {
+                        Console.WriteLine("ERROR (wrong input-format)");
+                    }
                 }
-                catch
+                else
                 {
-                    Console.WriteLine("ERROR (wrong input-format)");
-                    Checkout();
+                    FileAndFormat.ProductsToFile(allProducts, productsFilePath);
+                    FileAndFormat.FileToProducts(productsFilePath);
+                    string receiptString = FileAndFormat.ReceiptToFile(receipt, receiptFilePath);
+                    File.WriteAllText(receiptFilePath, File.ReadAllText(receiptFilePath) + receiptString);
+                    FileAndFormat.FileToReceipt(receiptFilePath);
+                    Run();
+                    break;
                 }
             }
-            else
-            {
-                ReceiptToFile(products);
-                FileToReceipt(receiptFilePath);
-            }
-        }
-
-        void ChangeFileDirectory()
-        {
-            Console.WriteLine("Enter an existing directory!");
-            Console.WriteLine("Input 'Back' to go to the main menu.");
-            string directory = Console.ReadLine();
-            string filePath = ""; 
-            string fileName;
-
-            if (directory.ToLower() == "back") { Run(); }
-
-            if (Directory.Exists(directory))
-            {
-                Console.WriteLine("Enter a file name:");
-                fileName = Console.ReadLine();
-                try
-                {
-                    File.WriteAllText(directory + "\\" + fileName + ".txt", "");
-                }
-                catch
-                {
-                    Console.WriteLine("Access denied to that directory, choose another one:");
-                    Console.WriteLine(new UnauthorizedAccessException());
-                    ChangeFileDirectory();
-                }
-
-                filePath = directory + "\\" + fileName + ".txt";
-                Console.WriteLine("Directory changed to:");
-                Console.WriteLine(filePath);
-            }
-            else
-            {
-                Console.WriteLine("You must enter a VALID directory that exists!");
-                ChangeFileDirectory();
-            }
-        }
-
-        void ReceiptToFile(List<Product> list)
-        {
-            string stringBuilder = "";
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                stringBuilder += "{\n   ";
-                stringBuilder += list[i].ID + ",\n   ";
-                stringBuilder += list[i].Name + ",\n";
-                stringBuilder += "}";
-
-                if (list.Count > 1 && i + 1 < list.Count) { stringBuilder += ",\n"; }
-            }
-
-            File.WriteAllText(receiptFilePath, stringBuilder);
-        }
-
-        void FileToReceipt(string filePath)
-        {
-            string fileContent = File.ReadAllText(filePath);
-
-            fileContent = fileContent.Replace("},", "");
-            fileContent = fileContent.Replace("}", "");
-            fileContent = fileContent.Replace("{", "");
-            fileContent = fileContent.Replace("\n", "");
-
-            Console.WriteLine(fileContent);
         }
     }
 }

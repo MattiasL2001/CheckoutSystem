@@ -11,8 +11,9 @@ namespace Checkout_System
         public enum PriceTypes { PricePerUnit, PricePerKG}
 
         public int ID;
-        float Price;
-        PriceTypes PriceType;
+        public float Price;
+        public float Weight;
+        public PriceTypes PriceType;
         public string Name;
 
         public Product(int id, float price, PriceTypes priceType, string name)
@@ -21,6 +22,15 @@ namespace Checkout_System
             Price = price;
             PriceType = priceType;
             Name = name;
+        }
+
+        public Product(int id, float price, PriceTypes priceType, string name, float weight)
+        {
+            ID = id;
+            Price = price;
+            PriceType = priceType;
+            Name = name;
+            Weight = weight;
         }
     }
 }
