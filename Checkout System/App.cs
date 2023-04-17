@@ -11,12 +11,16 @@ namespace Checkout_System
         string receiptFilePath = "C:\\Users\\Matti\\OneDrive\\Skrivbord\\RECEIPT" + DateTime.Today.ToString("yyyyMMdd") + ".txt";
         string productsFilePath = "C:\\Users\\Matti\\OneDrive\\Skrivbord\\" + "Products" + ".txt";
         List<Product> products = new List<Product>();
-        public void Run()
+
+        public App()
         {
             Product banana = new Product(1, 25, Product.PriceTypes.PricePerKG, "Banana");
-            Product banana2 = new Product(2, 30, Product.PriceTypes.PricePerKG, "Apple");
+            Product apple = new Product(2, 30, Product.PriceTypes.PricePerKG, "Apple");
             AddProductToList(banana);
-            AddProductToList(banana2);
+            AddProductToList(apple);
+        }
+        public void Run()
+        {
             Console.WriteLine("Checkout:");
             Console.WriteLine("1. New checkout");
             Console.WriteLine("2. Exit");
@@ -57,18 +61,31 @@ namespace Checkout_System
             Console.WriteLine("Add products below: <product id> <quantity>");
             string answer = Console.ReadLine();
             string[] answerSplit;
-            answerSplit = answer.Split(" ");
 
-            try
+            if (answer.ToLower() != "pay")
             {
-                int id = Convert.ToInt32(answerSplit[0]);
-                int quantity = Convert.ToInt32(answerSplit[1]);
+                answerSplit = answer.Split(" ");
+
+                try
+                {
+                    int id = Convert.ToInt32(answerSplit[0]);
+                    int quantity = Convert.ToInt32(answerSplit[1]);
+                }
+                catch
+                {
+                    Console.WriteLine("ERROR (wrong input-format)");
+                    Checkout();
+                }
             }
-            catch
+            else
             {
-                Console.WriteLine("ERROR (wrong input-format)");
-                Checkout();
+                ReceiptToFile(products);
             }
+        }
+
+        void ReceiptToFile(List<Product> list)
+        {
+            File.WriteAllText(receiptFilePath, "");
         }
     }
 }
