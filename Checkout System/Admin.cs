@@ -30,5 +30,10 @@ namespace Checkout_System
             }
             products.Add(product);
         }
+
+        public static void ChangeProductPrice(List<Product> products, int id)
+        {
+            if (products.Count < id) { Console.WriteLine("Error: ID is out of bounds"); }
+        }
     }
 }

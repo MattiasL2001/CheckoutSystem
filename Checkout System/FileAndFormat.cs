@@ -80,11 +80,36 @@ namespace Checkout_System
             return new List<Receipt>();
         }
 
+        public static int GetPreviousSerialNumber(string receiptFilePath)
+        {
+            List<string> receipts = File.ReadAllText(receiptFilePath).Split("----------------------------------").ToList();
+            List<string> receiptObject = new List<string>();
+            string serialNumber = "0";
+            receipts.ForEach(receipt =>
+            {
+                if (receipt != "" && receipt != "\n")
+                {
+                    if (receipt.Split("\n")[1].Contains("SerialNumber"))
+                    {
+                        serialNumber = receipt.Split("\n")[1].Replace("SerialNumber: ", "");
+                    }
+                    else
+                    {
+                        serialNumber = receipt.Split("\n")[2].Replace("SerialNumber: ", "");
+                    }
+                }
+            });
+
+            return Convert.ToInt32(serialNumber);
+        }
+
         public static string ReceiptToFile(Receipt receipt, string receiptFilePath)
         {
             float price = 0;
             string stringBuilder = "";
+            int serialNumber = GetPreviousSerialNumber(receiptFilePath) + 1;
             stringBuilder += "RECEIPT: " + DateTime.Now + "\n";
+            stringBuilder += $"SerialNumber: {serialNumber}\n";
 
             receipt.ProductList.ForEach(x =>
             {
