@@ -58,7 +58,9 @@ namespace Checkout_System
             {
                 stringBuilder += "{\n   ";
                 stringBuilder += list[i].ID + ",\n   ";
-                stringBuilder += list[i].Name + ",\n";
+                stringBuilder += list[i].Price + ",\n   ";
+                stringBuilder += list[i].Name + ",\n   ";
+                stringBuilder += list[i].PriceType + "\n";
                 stringBuilder += "}";
 
                 if (list.Count > 1 && i + 1 < list.Count) { stringBuilder += ",\n"; }
@@ -67,22 +69,62 @@ namespace Checkout_System
             File.WriteAllText(productsFilePath, stringBuilder);
         }
 
-        public static List<Receipt> FileToProducts(string filePath)
+        public static List<Product> FileToProducts(string filePath)
         {
             string fileContent = File.ReadAllText(filePath);
+            List<Product> products = new List<Product>();
+
+            if (fileContent.Contains("},"))
+            {
+                string[] productsString = fileContent.Split("},");
+
+                foreach (string prod in productsString)
+                {
+                    string prodString = prod;
+                    prodString = prodString.Replace("},", "");
+                    prodString = prodString.Replace("{", "");
+                    prodString = prodString.Replace("}", "");
+                    prodString = prodString.Replace("\n", "");
+
+                    int prodId = Convert.ToInt32(prodString.Split(',')[0]);
+                    int prodPrice = Convert.ToInt32(prodString.Split(',')[1]);
+                    Product.PriceTypes prodPriceType;
+                    string prodName = prodString.Split(',')[3];
+
+                    if (prodString.Split(",")[2].Contains("Unit")) { prodPriceType = Product.PriceTypes.PricePerUnit; }
+                    else { prodPriceType = Product.PriceTypes.PricePerKG; };
+
+                    products.Add(new Product(prodId, prodPrice, prodPriceType, prodName));
+                }
+            }
+            else
+            {
+                fileContent = fileContent.Replace("}", "");
+                fileContent = fileContent.Replace("{", "");
+                fileContent = fileContent.Replace("\n", "");
+                int productID = Convert.ToInt32(fileContent.Split(',')[0]);
+                int productPrice = Convert.ToInt32(fileContent.Split(',')[1]);
+                string productName = fileContent.Split(",")[2];
+                Product.PriceTypes priceType = new Product.PriceTypes();
+
+                if (fileContent.Split(",")[3].Contains("Unit")) { priceType = Product.PriceTypes.PricePerUnit; }
+                else { priceType = Product.PriceTypes.PricePerKG; };
+
+                products.Add(new Product(productID, productPrice, priceType, productName));
+            }
 
             fileContent = fileContent.Replace("},", "");
             fileContent = fileContent.Replace("}", "");
             fileContent = fileContent.Replace("{", "");
             fileContent = fileContent.Replace("\n", "");
 
-            Console.WriteLine(fileContent);
-            return new List<Receipt>();
+            return products;
         }
 
         public static int GetPreviousSerialNumber(string receiptFilePath)
         {
-            List<string> receipts = File.ReadAllText(receiptFilePath).Split("----------------------------------").ToList();
+            List<string> receipts = File.ReadAllText(receiptFilePath).
+                Split("----------------------------------").ToList();
             List<string> receiptObject = new List<string>();
             string serialNumber = "0";
             receipts.ForEach(receipt =>
@@ -123,8 +165,8 @@ namespace Checkout_System
                 else
                 {
                     price += x.Quantity * x.Product.Price;
-                    stringBuilder += $"{x.Product.Name} {x.Quantity} x {x.Product.Price}";
-                    stringBuilder += $" = {price}";
+                    stringBuilder += $"{x.Product.Name} {x.Quantity} x {x.Product.Price}kr";
+                    stringBuilder += $" = {price}kr\n";
                 }
             });
 

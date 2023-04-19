@@ -8,19 +8,23 @@ namespace Checkout_System
 {
     public class App
     {
-        string receiptFilePath = "C:\\Users\\Matti\\OneDrive\\Skrivbord\\RECEIPT" + DateTime.Today.ToString("yyyyMMdd") + ".txt";
-        string productsFilePath = "C:\\Users\\Matti\\OneDrive\\Skrivbord\\" + "Products" + ".txt";
-        List<Product> allProducts = new List<Product>();
+        public static string receiptFilePath = "C:\\Users\\Matti\\OneDrive\\Skrivbord\\RECEIPT" + DateTime.Today.ToString("yyyyMMdd") + ".txt";
+        public static string productsFilePath = "C:\\Users\\Matti\\OneDrive\\Skrivbord\\" + "Products" + ".txt";
+        List<Product> listOfProducts = new List<Product>();
         List<ReceiptObject> receiptProducts = new List<ReceiptObject>();
         Receipt receipt;
 
         public App()
         {
             receipt = new Receipt(receiptProducts);
-            Product banana = new Product(1, 25, Product.PriceTypes.PricePerKG, "Banana");
-            Product apple = new Product(2, 30, Product.PriceTypes.PricePerKG, "Apple");
-            Admin.AddProductToList(banana, allProducts);
-            Admin.AddProductToList(apple, allProducts);
+
+            //Product banana = new Product(1, 25, Product.PriceTypes.PricePerKG, "Banana");
+            //Product apple = new Product(2, 30, Product.PriceTypes.PricePerKG, "Apple");
+            //Product chocolateBar = new Product(3, 20, Product.PriceTypes.PricePerUnit, "ChocolateBar");
+
+            //Checkout_System.Admin.AddProduct(banana);
+            //Checkout_System.Admin.AddProduct(apple);
+            //Checkout_System.Admin.AddProduct(chocolateBar);
         }
         public void Run()
         {
@@ -37,9 +41,75 @@ namespace Checkout_System
                 string s = FileAndFormat.ChangeFileDirectory();
                 if (s.ToLower() == "back") { Run(); }
             }
-            else if (answer == "3") {  }
+            else if (answer == "3") { Admin(); }
             else if (answer == "4") { Environment.Exit(0); }
             else { Run(); }
+        }
+
+        void Admin()
+        {
+            while (true)
+            {
+                Console.WriteLine("Admin page");
+                Console.WriteLine("1. To add product");
+                Console.WriteLine("2. To remove product");
+                Console.WriteLine("3. To change product price");
+                Console.WriteLine("4. To change product name");
+                Console.WriteLine("'Back' to go back to main menu");
+                string answer = Console.ReadLine();
+                if (answer.ToLower() == "back")
+                {
+                    Run();
+                    break;
+                }
+                else if (answer == "1")
+                {
+                    AddProduct();
+                }
+                else if (answer == "2") { }
+                else if (answer == "3") { }
+                else if (answer == "4") { }
+            }
+        }
+
+        void AddProduct()
+        {
+            while (true)
+            {
+                Console.WriteLine("Input an ID for the product");
+                string input = Console.ReadLine();
+                Product product = new Product(0, 0, 0, "");
+                try
+                {
+                    Convert.ToInt32(input);
+                    Checkout_System.Admin.CheckIfProductExists(input);
+
+                    if (Checkout_System.Admin.CheckIfProductExists(input))
+                    {
+                        Console.WriteLine("A product with the given ID already exists!");
+                        AddProduct();
+                        break;
+                    }
+                    else { product.ID = Convert.ToInt32(input); }
+                }
+                catch
+                {
+                    Console.WriteLine("Error: Could not recognize user input as an integer");
+                    AddProduct();
+                    break;
+                }
+
+                Console.WriteLine("Input a name for the product");
+                input = Console.ReadLine();
+                if (Checkout_System.Admin.CheckIfProductExists(input))
+                {
+                    Console.WriteLine("A product with the given name already exists!");
+                    AddProduct();
+                    break;
+                }
+                else { product.Name = input; }
+                Checkout_System.Admin.AddProduct(product);
+            }
         }
 
         void Checkout()
@@ -62,7 +132,7 @@ namespace Checkout_System
                         int quantity = Convert.ToInt32(answerSplit[1]);
                         bool productExists = false;
 
-                        allProducts.ForEach(p =>
+                        listOfProducts.ForEach(p =>
                         {
                             if (p.ID == id)
                             {
@@ -88,8 +158,7 @@ namespace Checkout_System
                 }
                 else
                 {
-                    FileAndFormat.ProductsToFile(allProducts, productsFilePath);
-                    FileAndFormat.FileToProducts(productsFilePath);
+                    FileAndFormat.ProductsToFile(listOfProducts, productsFilePath);
                     string receiptString = FileAndFormat.ReceiptToFile(receipt, receiptFilePath);
                     File.WriteAllText(receiptFilePath, File.ReadAllText(receiptFilePath) + receiptString);
                     FileAndFormat.FileToReceipt(receiptFilePath);
