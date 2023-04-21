@@ -63,11 +63,12 @@ namespace Checkout_System
                     Run();
                     break;
                 }
-                else if (answer == "1") { AddProduct(); }
+                else if (answer == "1") { Checkout_System.Admin.AddProduct(); }
                 else if (answer == "2")
                 {
                     Console.WriteLine("Enter an ID or name for the product to remove.");
                     string input = Console.ReadLine();
+
                     if (int.TryParse(input, out int result))
                     {
                         Checkout_System.Admin.RemoveProduct(result);
@@ -77,9 +78,60 @@ namespace Checkout_System
                         Checkout_System.Admin.RemoveProduct(input);
                     }
                 }
+
                 else if (answer == "3")
                 {
-                    Console.WriteLine("Enter an ID or name for the product to remove.");
+                    Console.WriteLine("Enter an ID or name for the product to change price on.");
+                    string input = Console.ReadLine();
+                    object product;
+
+                    if (int.TryParse(input, out int result))
+                    {
+                        product = Checkout_System.Admin.GetProduct(result);
+                    }
+                    else
+                    {
+                        product = Checkout_System.Admin.GetProduct(input);
+                    }
+
+                    if (product != null)
+                    {
+                        FileAndFormat.ClearProducts(productsFilePath);
+                        Product p = product as Product;
+                        List<Product> newProductList = new List<Product>();
+
+                        listOfProducts.ForEach(prod =>
+                        {
+                            if (prod.ID != p.ID) { newProductList.Add(prod); }
+                        });
+
+                        string newPrice;
+
+                        while(true)
+                        {
+                            Console.WriteLine("Enter a new price for the product!");
+                            newPrice = Console.ReadLine();
+                            if (int.TryParse(newPrice, out int intPrice))
+                            {
+                                p.Price = intPrice;
+                                break;
+                            }
+                            else { Console.WriteLine("Could not recognize input as an integer!"); }
+                        }
+
+                        newProductList.Add(p);
+                        FileAndFormat.ProductsToFile(newProductList, productsFilePath);
+                    }
+                    else
+                    {
+                        Console.WriteLine(product);
+                        Console.WriteLine("Could not find any product with the given id or name!");
+                    }
+                }
+
+                else if (answer == "4")
+                {
+                    Console.WriteLine("Enter an ID or name for the product to change name on.");
                     string input = Console.ReadLine();
                     object product;
                     if (int.TryParse(input, out int result))
@@ -93,14 +145,20 @@ namespace Checkout_System
 
                     if (product != null)
                     {
-                        listOfProducts.Remove((Product)product);
+                        FileAndFormat.ClearProducts(productsFilePath);
                         Product p = product as Product;
-                        Checkout_System.Admin.RemoveProduct(p.Name);
+                        List<Product> newProductList = new List<Product>();
+
+                        listOfProducts.ForEach(prod =>
+                        {
+                            if (prod.ID != p.ID) { newProductList.Add(prod); }
+                        });
+
                         Console.WriteLine("Enter a new name for the product!");
                         string newName = Console.ReadLine();
                         p.Name = newName;
-                        listOfProducts.Add(p);
-                        FileAndFormat.ProductsToFile(listOfProducts, productsFilePath);
+                        newProductList.Add(p);
+                        FileAndFormat.ProductsToFile(newProductList, productsFilePath);
                     }
                     else
                     {
@@ -108,68 +166,7 @@ namespace Checkout_System
                         Console.WriteLine("Could not find any product with the given id or name!");
                     }
                 }
-                else if (answer == "4") { }
             }
-        }
-
-        void AddProduct()
-        {
-            string input;
-            Product product = new Product(0, 0, 0, "");
-
-            while (true)
-            {
-                Console.WriteLine("Input an ID for the product");
-                input = Console.ReadLine();
-
-                try { Convert.ToInt32(input); }
-                catch
-                {
-                    Console.WriteLine("Error: Could not recognize user input as an integer");
-                }
-
-                if (Checkout_System.Admin.CheckIfProductExists(Convert.ToInt32(input)))
-                {
-                    Console.WriteLine("A product with the given ID already exists!");
-                }
-                else { product.ID = Convert.ToInt32(input); break; }
-            }
-
-            while (true)
-            {
-                Console.WriteLine("Input a name for the product");
-                input = Console.ReadLine();
-                if (Checkout_System.Admin.CheckIfProductExists(input))
-                {
-                    Console.WriteLine("A product with the given name already exists!");
-                }
-                else { product.Name = input; break; }
-            }
-
-            while (true)
-            {
-                Console.WriteLine("Price per unit or price per KG?");
-                Console.WriteLine("1. For price per unit");
-                Console.WriteLine("2. For price per KG");
-                input = Console.ReadLine().Trim();
-
-                if (input == "1") { product.PriceType = Product.PriceTypes.PricePerUnit; break; }
-                else if (input == "2") { product.PriceType = Product.PriceTypes.PricePerKG; break; }
-                else { Console.WriteLine("Invalid input!"); }
-            }
-
-            while (true)
-            {
-                Console.WriteLine("Input a price for the product");
-                input = Console.ReadLine();
-
-                if (int.TryParse(input, out int output)) { product.Price = output; break; }
-                else { Console.WriteLine("Could not recognize input as an integer!"); }
-            }
-
-            listOfProducts = FileAndFormat.FileToProducts(productsFilePath);
-            listOfProducts.Add(product);
-            FileAndFormat.ProductsToFile(listOfProducts, productsFilePath);
         }
 
         void Checkout()

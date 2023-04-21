@@ -130,6 +130,20 @@ namespace Checkout_System
             return products;
         }
 
+        public static void ClearProducts(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                File.WriteAllText(filePath, "");
+            }
+            else
+            {
+                Console.WriteLine("The file:");
+                Console.WriteLine(filePath);
+                Console.WriteLine("does not exist!");
+            }
+        }
+
         public static int GetPreviousSerialNumber(string receiptFilePath)
         {
             List<string> receipts = File.ReadAllText(receiptFilePath).

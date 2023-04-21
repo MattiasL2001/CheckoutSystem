@@ -8,28 +8,65 @@ namespace Checkout_System
 {
     static class Admin
     {
-        public static void AddProduct(Product product)
+        public static void AddProduct()
         {
+            string input;
             List<Product> products = FileAndFormat.FileToProducts(App.productsFilePath);
+            Product product = new Product(0, 0, 0, "");
 
-            foreach (Product p in products)
+            while (true)
             {
-                if (product.ID == p.ID)
+                Console.WriteLine("Input an ID for the product");
+                input = Console.ReadLine();
+
+                try { Convert.ToInt32(input); }
+                catch
                 {
-                    throw new Exception("Product ID already exists!");
+                    Console.WriteLine("Error: Could not recognize user input as an integer");
+                    AddProduct();
+                    break;
                 }
 
-                else if (product.Name == p.Name)
+                if (Checkout_System.Admin.CheckIfProductExists(Convert.ToInt32(input)))
                 {
-                    throw new Exception("Product name already exists!");
+                    Console.WriteLine("A product with the given ID already exists!");
                 }
-
-                else
-                {
-                    products.Add(product);
-                    return;
-                }
+                else { product.ID = Convert.ToInt32(input); break; }
             }
+
+            while (true)
+            {
+                Console.WriteLine("Input a name for the product");
+                input = Console.ReadLine();
+                if (Checkout_System.Admin.CheckIfProductExists(input))
+                {
+                    Console.WriteLine("A product with the given name already exists!");
+                }
+                else { product.Name = input; break; }
+            }
+
+            while (true)
+            {
+                Console.WriteLine("Price per unit or price per KG?");
+                Console.WriteLine("1. For price per unit");
+                Console.WriteLine("2. For price per KG");
+                input = Console.ReadLine().Trim();
+
+                if (input == "1") { product.PriceType = Product.PriceTypes.PricePerUnit; break; }
+                else if (input == "2") { product.PriceType = Product.PriceTypes.PricePerKG; break; }
+                else { Console.WriteLine("Invalid input!"); }
+            }
+
+            while (true)
+            {
+                Console.WriteLine("Input a price for the product");
+                input = Console.ReadLine();
+
+                if (int.TryParse(input, out int output)) { product.Price = output; break; }
+                else { Console.WriteLine("Could not recognize input as an integer!"); }
+            }
+
+            products = FileAndFormat.FileToProducts(App.productsFilePath);
             products.Add(product);
             FileAndFormat.ProductsToFile(products, App.productsFilePath);
         }
@@ -75,7 +112,6 @@ namespace Checkout_System
                     if (x.ID == id)
                     {
                         Console.WriteLine("Successfully removed the product: " + x.Name);
-                        Console.WriteLine(x.Name);
                         newProductList.Remove(x);
                     }
                     else { newProductList.Add(x); }
@@ -163,7 +199,6 @@ namespace Checkout_System
             List<Product> products = FileAndFormat.FileToProducts(App.productsFilePath);
             foreach (Product p in products)
             {
-                Console.WriteLine(p.Name);
                 if (p.Name == name) { return true; }
             }
             return false;
