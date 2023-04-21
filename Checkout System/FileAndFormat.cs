@@ -71,8 +71,15 @@ namespace Checkout_System
 
         public static List<Product> FileToProducts(string filePath)
         {
-            string fileContent = File.ReadAllText(filePath);
+            string fileContent = "";
             List<Product> products = new List<Product>();
+
+            if (File.Exists(filePath)) { fileContent = File.ReadAllText(filePath); }
+            else
+            {
+                File.WriteAllText(filePath, "");
+                fileContent = File.ReadAllText(filePath);
+            }
 
             if (fileContent.Contains("},"))
             {
@@ -88,26 +95,28 @@ namespace Checkout_System
 
                     int prodId = Convert.ToInt32(prodString.Split(',')[0]);
                     int prodPrice = Convert.ToInt32(prodString.Split(',')[1]);
+                    string prodName = prodString.Split(',')[2].Trim();
                     Product.PriceTypes prodPriceType;
-                    string prodName = prodString.Split(',')[3];
 
-                    if (prodString.Split(",")[2].Contains("Unit")) { prodPriceType = Product.PriceTypes.PricePerUnit; }
+                    if (prodString.Split(",")[3].Contains("Unit"))
+                    { prodPriceType = Product.PriceTypes.PricePerUnit; }
                     else { prodPriceType = Product.PriceTypes.PricePerKG; };
 
                     products.Add(new Product(prodId, prodPrice, prodPriceType, prodName));
                 }
             }
-            else
+            else if (fileContent != "")
             {
                 fileContent = fileContent.Replace("}", "");
                 fileContent = fileContent.Replace("{", "");
                 fileContent = fileContent.Replace("\n", "");
                 int productID = Convert.ToInt32(fileContent.Split(',')[0]);
                 int productPrice = Convert.ToInt32(fileContent.Split(',')[1]);
-                string productName = fileContent.Split(",")[2];
+                string productName = fileContent.Split(",")[2].Trim();
                 Product.PriceTypes priceType = new Product.PriceTypes();
 
-                if (fileContent.Split(",")[3].Contains("Unit")) { priceType = Product.PriceTypes.PricePerUnit; }
+                if (fileContent.Split(",")[3].Contains("Unit"))
+                { priceType = Product.PriceTypes.PricePerUnit; }
                 else { priceType = Product.PriceTypes.PricePerKG; };
 
                 products.Add(new Product(productID, productPrice, priceType, productName));
