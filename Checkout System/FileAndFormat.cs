@@ -146,6 +146,8 @@ namespace Checkout_System
 
         public static int GetPreviousSerialNumber(string receiptFilePath)
         {
+            if (!File.Exists (receiptFilePath)) { File.WriteAllText(receiptFilePath, ""); }
+
             List<string> receipts = File.ReadAllText(receiptFilePath).
                 Split("----------------------------------").ToList();
             List<string> receiptObject = new List<string>();
