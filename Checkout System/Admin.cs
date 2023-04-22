@@ -19,26 +19,27 @@ namespace Checkout_System
                 Console.WriteLine("Input an ID for the product");
                 input = Console.ReadLine();
 
-                try { Convert.ToInt32(input); }
-                catch
+                if (!int.TryParse(input, out int intInput))
                 {
-                    Console.WriteLine("Error: Could not recognize user input as an integer");
-                    AddProduct();
-                    break;
+                    Console.WriteLine("Could not recognize input as an integer!");
+                    continue;
                 }
 
-                if (Checkout_System.Admin.CheckIfProductExists(Convert.ToInt32(input)))
+                if (CheckIfProductExists(Convert.ToInt32(input)))
                 {
                     Console.WriteLine("A product with the given ID already exists!");
+                    continue;
                 }
-                else { product.ID = Convert.ToInt32(input); break; }
+
+                product.ID = Convert.ToInt32(input);
+                break;
             }
 
             while (true)
             {
                 Console.WriteLine("Input a name for the product");
                 input = Console.ReadLine();
-                if (Checkout_System.Admin.CheckIfProductExists(input))
+                if (CheckIfProductExists(input))
                 {
                     Console.WriteLine("A product with the given name already exists!");
                 }
