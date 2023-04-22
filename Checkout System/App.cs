@@ -35,8 +35,8 @@ namespace Checkout_System
             if (answer == "1") { Checkout(); }
             else if (answer == "2")
             {
-                string s = FileAndFormat.ChangeFileDirectory();
-                if (s.ToLower() == "back") { Run(); }
+                string result = FileAndFormat.ChangeFileDirectory();
+                if (result.ToLower() == "back") { Run(); }
             }
             else if (answer == "3") { Admin(); }
             else if (answer == "4") { Environment.Exit(0); }
@@ -93,12 +93,12 @@ namespace Checkout_System
                     if (product != null)
                     {
                         FileAndFormat.ClearProducts(productsFilePath);
-                        Product p = product as Product;
+                        Product productCast = (Product)product;
                         List<Product> newProductList = new List<Product>();
 
-                        listOfProducts.ForEach(prod =>
+                        listOfProducts.ForEach(product =>
                         {
-                            if (prod.ID != p.ID) { newProductList.Add(prod); }
+                            if (product.ID != productCast.ID) { newProductList.Add(product); }
                         });
 
                         string newPrice;
@@ -109,18 +109,17 @@ namespace Checkout_System
                             newPrice = Console.ReadLine();
                             if (int.TryParse(newPrice, out int intPrice))
                             {
-                                p.Price = intPrice;
+                                productCast.Price = intPrice;
                                 break;
                             }
                             else { Console.WriteLine("Could not recognize input as an integer!"); }
                         }
 
-                        newProductList.Add(p);
+                        newProductList.Add(productCast);
                         FileAndFormat.ProductsToFile(newProductList, productsFilePath);
                     }
                     else
                     {
-                        Console.WriteLine(product);
                         Console.WriteLine("Could not find any product with the given id or name!");
                     }
                 }
@@ -142,18 +141,18 @@ namespace Checkout_System
                     if (product != null)
                     {
                         FileAndFormat.ClearProducts(productsFilePath);
-                        Product p = product as Product;
+                        Product productCast = (Product)product;
                         List<Product> newProductList = new List<Product>();
 
-                        listOfProducts.ForEach(prod =>
+                        listOfProducts.ForEach(product =>
                         {
-                            if (prod.ID != p.ID) { newProductList.Add(prod); }
+                            if (product.ID != productCast.ID) { newProductList.Add(product); }
                         });
 
                         Console.WriteLine("Enter a new name for the product!");
                         string newName = Console.ReadLine();
-                        p.Name = newName;
-                        newProductList.Add(p);
+                        productCast.Name = newName;
+                        newProductList.Add(productCast);
                         FileAndFormat.ProductsToFile(newProductList, productsFilePath);
                     }
                     else
@@ -173,7 +172,7 @@ namespace Checkout_System
                 Console.WriteLine("Add products below: <product id> <quantity>");
                 string answer = Console.ReadLine();
                 string[] answerSplit;
-                Product prod = null;
+                Product product = null;
 
                 if (answer.ToLower() != "pay")
                 {
@@ -185,12 +184,12 @@ namespace Checkout_System
                         int quantity = Convert.ToInt32(answerSplit[1]);
                         bool productExists = false;
 
-                        listOfProducts.ForEach(p =>
+                        listOfProducts.ForEach(prod =>
                         {
-                            if (p.ID == id)
+                            if (prod.ID == id)
                             {
                                 productExists = true;
-                                prod = new Product(p.ID, p.Price, p.PriceType, p.Name);
+                                product = new Product(prod.ID, prod.Price, prod.PriceType, prod.Name);
                             }
                         });
 
@@ -198,10 +197,10 @@ namespace Checkout_System
                         {
                             Console.WriteLine("Could not find any product with the given id!");
                         }
-                        else if (prod != null)
+                        else if (product != null)
                         {
-                            receiptProducts.Add(new ReceiptObject(prod, quantity));
-                            Console.WriteLine($"Added {quantity} {prod.Name}(s)");
+                            receiptProducts.Add(new ReceiptObject(product, quantity));
+                            Console.WriteLine($"Added {quantity} {product.Name}(s)");
                         }
                     }
                     catch

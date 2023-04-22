@@ -73,9 +73,9 @@ namespace Checkout_System
 
             if (CheckIfProductExists(id))
             {
-                foreach (Product p in products)
+                foreach (Product product in products)
                 {
-                    if (p.ID == id) { return p; }
+                    if (product.ID == id) { return product; }
                 }
             }
             return null;
@@ -87,9 +87,9 @@ namespace Checkout_System
 
             if (CheckIfProductExists(name))
             {
-                foreach (Product p in products)
+                foreach (Product product in products)
                 {
-                    if (p.Name == name) { return p; }
+                    if (product.Name == name) { return product; }
                 }
             }
             return null;
@@ -103,14 +103,14 @@ namespace Checkout_System
             {
                 List<Product> newProductList = new List<Product>();
 
-                products.ForEach(x =>
+                products.ForEach(product =>
                 {
-                    if (x.ID == id)
+                    if (product.ID == id)
                     {
-                        Console.WriteLine("Successfully removed the product: " + x.Name);
-                        newProductList.Remove(x);
+                        Console.WriteLine("Successfully removed the product: " + product.Name);
+                        newProductList.Remove(product);
                     }
-                    else { newProductList.Add(x); }
+                    else { newProductList.Add(product); }
                 });
                 products = newProductList;
                 FileAndFormat.ProductsToFile(products, App.productsFilePath);
@@ -129,14 +129,14 @@ namespace Checkout_System
             {
                 List<Product> newProductList = new List<Product>();
 
-                products.ForEach(x =>
+                products.ForEach(product =>
                 {
-                    if (x.Name == name)
+                    if (product.Name == name)
                     {
-                        Console.WriteLine("Successfully removed the product: " + x.Name);
-                        newProductList.Remove(x);
+                        Console.WriteLine("Successfully removed the product: " + product.Name);
+                        newProductList.Remove(product);
                     }
-                    else { newProductList.Add(x); }
+                    else { newProductList.Add(product); }
                 });
                 products = newProductList;
                 FileAndFormat.ProductsToFile(products, App.productsFilePath);
@@ -164,11 +164,11 @@ namespace Checkout_System
 
                 if (!CheckIfProductExists(answer))
                 {
-                    products.ForEach(x =>
+                    products.ForEach(product =>
                     {
-                        if (x.Name == name)
+                        if (product.Name == name)
                         {
-                            x.Name = answer;
+                            product.Name = answer;
                             Console.WriteLine("Name of product changed!");
                         }
                     });
@@ -184,18 +184,18 @@ namespace Checkout_System
         {
             List<Product> products = FileAndFormat.FileToProducts(App.productsFilePath);
 
-            foreach (Product p in products)
+            foreach (Product product in products)
             {
-                if (p.ID == id) { return true; }
+                if (product.ID == id) { return true; }
             }
             return false;
         }
         public static bool CheckIfProductExists(string name)
         {
             List<Product> products = FileAndFormat.FileToProducts(App.productsFilePath);
-            foreach (Product p in products)
+            foreach (Product product in products)
             {
-                if (p.Name == name) { return true; }
+                if (product.Name == name) { return true; }
             }
             return false;
         }
