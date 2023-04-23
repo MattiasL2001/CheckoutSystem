@@ -206,8 +206,12 @@ namespace Checkout_System
 
                     Console.WriteLine("Enter a title for the campaign!");
                     title = Console.ReadLine();
-                    List<Campaign> campaignList = FileAndFormat.FileToCampaigns(campaignsFilePath);
+
+                    var campaignList = new List<Campaign>();
+
+                    FileAndFormat.FileToCampaigns(campaignsFilePath).ForEach(campaignList.Add);
                     campaignList.Add(new Campaign(id, discountPercent, title));
+
                     FileAndFormat.CampaignsToFile(campaignList, campaignsFilePath);
                     Console.WriteLine("The campaign was successfully added!");
                 }

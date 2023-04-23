@@ -228,8 +228,8 @@ namespace Checkout_System
                 List<string> campaignsString;
                 var campaignList = new List<Campaign>();
 
-                if (File.ReadAllText(filePath).Trim().Contains("},\n{"))
-                { campaignsString = File.ReadAllText(filePath).Trim().Split("},{").ToList(); }
+                if (File.ReadAllText(filePath).Contains("},\n{"))
+                { campaignsString = File.ReadAllText(filePath).Trim().Split("},\n{").ToList(); }
                 else { campaignsString = File.ReadAllText(filePath).Trim().Split("}").ToList(); }
 
                 campaignsString.ForEach(campaign =>
