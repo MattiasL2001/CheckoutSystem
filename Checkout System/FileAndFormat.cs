@@ -180,17 +180,20 @@ namespace Checkout_System
                 if (receiptObject.Product.PriceType == Product.PriceTypes.PricePerKG)
                 {
                     var p = receiptObject.Product;
+                    double oldPrice = p.Price;
                     List<Campaign> campaignList = GetCampaignsForProduct(p.ID);
 
                     campaignList.ForEach(campaign =>
                     {
-                        double newPrice = p.Price * campaign.DiscountPercent * 0.01;
+                        double discount = 0.01 * (100 - campaign.DiscountPercent);
+                        double newPrice = oldPrice - (oldPrice * campaign.DiscountPercent * 0.01);
                         stringBuilder += $"CAMPAIGN: {campaign.Title}, {campaign.DiscountPercent}% OFF\n";
-                        stringBuilder += $"Price: {p.Price} * {campaign.DiscountPercent * 0,01} = {newPrice}\n";
+                        stringBuilder += $"Price: {oldPrice} * {discount} = {newPrice}\n";
+                        oldPrice = newPrice;
                     });
 
                     price = p.Price * p.Weight;
-                    stringBuilder += $"{p.Name} {p.Price}kr/kg x {p.Weight.ToString("0.0")}kg";
+                    stringBuilder += $"{p.Name} {oldPrice}kr/kg x {p.Weight.ToString("0.0")}kg";
                     stringBuilder += $" = {price}kr\n";
                 }
                 else
@@ -295,16 +298,17 @@ namespace Checkout_System
             if (!productExists) { return new List<Campaign>(); }
 
             List<Campaign> campaignList = FileToCampaigns(App.campaignsFilePath);
+            var productCampaigns = new List<Campaign>();
 
             campaignList.ForEach(campaign =>
             {
                 if (campaign.ID == productID)
                 {
-                    campaignList.Add(campaign);
+                    productCampaigns.Add(campaign);
                 }
             });
 
-            return campaignList;
+            return productCampaigns;
         }
     }
 }
