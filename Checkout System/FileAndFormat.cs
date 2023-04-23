@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+
 namespace Checkout_System
 {
     internal class FileAndFormat
@@ -167,7 +169,7 @@ namespace Checkout_System
 
         public static string ReceiptToFile(Receipt receipt, string receiptFilePath)
         {
-            float price = 0;
+            double price = 0;
             string stringBuilder = "";
             int serialNumber = GetPreviousSerialNumber(receiptFilePath) + 1;
             stringBuilder += "RECEIPT: " + DateTime.Now + "\n";
@@ -178,7 +180,16 @@ namespace Checkout_System
                 if (receiptObject.Product.PriceType == Product.PriceTypes.PricePerKG)
                 {
                     var p = receiptObject.Product;
-                    price += p.Price * p.Weight;
+                    List<Campaign> campaignList = GetCampaignsForProduct(p.ID);
+
+                    campaignList.ForEach(campaign =>
+                    {
+                        double newPrice = p.Price * campaign.DiscountPercent * 0.01;
+                        stringBuilder += $"CAMPAIGN: {campaign.Title}, {campaign.DiscountPercent}% OFF\n";
+                        stringBuilder += $"Price: {p.Price} * {campaign.DiscountPercent * 0,01} = {newPrice}\n";
+                    });
+
+                    price = p.Price * p.Weight;
                     stringBuilder += $"{p.Name} {p.Price}kr/kg x {p.Weight.ToString("0.0")}kg";
                     stringBuilder += $" = {price}kr\n";
                 }
@@ -203,6 +214,97 @@ namespace Checkout_System
             fileContent = fileContent.Replace("}", "");
             fileContent = fileContent.Replace("{", "");
             fileContent = fileContent.Replace("\n", "");
+        }
+
+        public static List<Campaign> FileToCampaigns(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                File.WriteAllText(filePath, "");
+                return new List<Campaign>();
+            }
+            else
+            {
+                List<string> campaignsString;
+                var campaignList = new List<Campaign>();
+
+                if (File.ReadAllText(filePath).Trim().Contains("},\n{"))
+                { campaignsString = File.ReadAllText(filePath).Trim().Split("},{").ToList(); }
+                else { campaignsString = File.ReadAllText(filePath).Trim().Split("}").ToList(); }
+
+                campaignsString.ForEach(campaign =>
+                {
+                    if (campaign != "")
+                    {
+                        string[] campaignElements = campaign.Split(",");
+
+                        for (int i = 0; i < campaignElements.Length; i++)
+                        {
+                            campaignElements[i] = campaignElements[i].Trim();
+                            campaignElements[i] = campaignElements[i].Replace("\n", "");
+                            campaignElements[i] = campaignElements[i].Replace("}", "");
+                            campaignElements[i] = campaignElements[i].Replace("{", "");
+                        }
+
+                        int id = Convert.ToInt32(campaignElements[0]);
+                        int discount = Convert.ToInt32(campaignElements[1]);
+                        string title = campaignElements[2];
+                        Campaign c = new Campaign(id, discount, title);
+                        campaignList.Add(c);
+                    }
+                });
+
+                return campaignList;
+            }
+        }
+
+        public static void CampaignsToFile(List<Campaign> campaignList, string filepath)
+        {
+            string stringBuilder = "";
+
+            for (int i = 0; i < campaignList.Count; i++)
+            {
+                if (campaignList[i].Title == "") { campaignList[i].Title = "\"\""; }
+
+                stringBuilder += "{\n   ";
+                stringBuilder += campaignList[i].ID + ",\n   ";
+                stringBuilder += campaignList[i].DiscountPercent + ",\n   ";
+                stringBuilder += campaignList[i].Title + "\n";
+                stringBuilder += "}";
+
+                if (campaignList.Count > i && i + 1 < campaignList.Count) { stringBuilder += ",\n"; }
+            }
+
+            File.WriteAllText(filepath, stringBuilder);
+        }
+
+        public static List<Campaign> GetCampaignsForProduct(int productID)
+        {
+            Product product = new Product(0, 0, Product.PriceTypes.PricePerKG, "");
+            bool productExists = false;
+
+            FileToProducts(App.productsFilePath).ForEach(prod =>
+            {
+                if (prod.ID == productID)
+                {
+                    product = prod;
+                    productExists = true;
+                }
+            });
+
+            if (!productExists) { return new List<Campaign>(); }
+
+            List<Campaign> campaignList = FileToCampaigns(App.campaignsFilePath);
+
+            campaignList.ForEach(campaign =>
+            {
+                if (campaign.ID == productID)
+                {
+                    campaignList.Add(campaign);
+                }
+            });
+
+            return campaignList;
         }
     }
 }

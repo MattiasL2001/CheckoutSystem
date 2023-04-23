@@ -6,12 +6,12 @@ namespace Checkout_System
         public enum PriceTypes { PricePerUnit, PricePerKG}
 
         public int ID;
-        public float Price;
+        public double Price;
         public float Weight;
         public PriceTypes PriceType;
         public string Name;
 
-        public Product(int id, float price, PriceTypes priceType, string name)
+        public Product(int id, double price, PriceTypes priceType, string name)
         {
             ID = id;
             Price = price;
@@ -19,7 +19,7 @@ namespace Checkout_System
             Name = name;
         }
 
-        public Product(int id, float price, PriceTypes priceType, string name, float weight)
+        public Product(int id, double price, PriceTypes priceType, string name, float weight)
         {
             ID = id;
             Price = price;

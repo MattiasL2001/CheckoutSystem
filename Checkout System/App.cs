@@ -5,7 +5,12 @@ namespace Checkout_System
     {
         public static string receiptFilePath =
         "C:\\Users\\Matti\\OneDrive\\Skrivbord\\RECEIPT" + DateTime.Today.ToString("yyyyMMdd") + ".txt";
-        public static string productsFilePath = "C:\\Users\\Matti\\OneDrive\\Skrivbord\\" + "Products" + ".txt";
+
+        public static string productsFilePath =
+        "C:\\Users\\Matti\\OneDrive\\Skrivbord\\" + "Products" + ".txt";
+
+        public static string campaignsFilePath =
+        "C:\\Users\\Matti\\OneDrive\\Skrivbord\\" + "Campaigns" + ".txt";
         List<Product> listOfProducts = new List<Product>();
         List<ReceiptObject> receiptProducts = new List<ReceiptObject>();
         Receipt receipt;
@@ -52,6 +57,7 @@ namespace Checkout_System
                 Console.WriteLine("2. To remove product");
                 Console.WriteLine("3. To change product price");
                 Console.WriteLine("4. To change product name");
+                Console.WriteLine("5. To add product campaign");
                 Console.WriteLine("'Back' to go back to main menu");
                 string answer = Console.ReadLine();
                 if (answer.ToLower() == "back")
@@ -160,6 +166,50 @@ namespace Checkout_System
                         Console.WriteLine(product);
                         Console.WriteLine("Could not find any product with the given id or name!");
                     }
+                }
+
+                else if (answer == "5")
+                {
+                    int id;
+                    int discountPercent;
+                    string title;
+
+                    while(true)
+                    {
+                        Console.WriteLine("Enter the ID for the product to add a campaign on!");
+                        string productID = Console.ReadLine();
+
+                        if (!int.TryParse(productID, out id))
+                        {
+                            Console.WriteLine("Could recognize input as an integer!");
+                            continue;
+                        }
+
+                        if (Checkout_System.Admin.CheckIfProductExists(id))
+                        {
+                            break;
+                        }
+                        else { Console.WriteLine("No product with the given ID exists!"); }
+                    }
+
+                    while(true)
+                    {
+                        Console.WriteLine("How much in % should the discount be? 0-100");
+                        if (int.TryParse(Console.ReadLine(), out int discount))
+                        {
+                            if (discount > 100) { discount = 100; }
+                            discountPercent = discount;
+                            break;
+                        }
+                        else { Console.WriteLine("Could recognize input as an integer!"); }
+                    }
+
+                    Console.WriteLine("Enter a title for the campaign!");
+                    title = Console.ReadLine();
+                    List<Campaign> campaignList = FileAndFormat.FileToCampaigns(campaignsFilePath);
+                    campaignList.Add(new Campaign(id, discountPercent, title));
+                    FileAndFormat.CampaignsToFile(campaignList, campaignsFilePath);
+                    Console.WriteLine("The campaign was successfully added!");
                 }
             }
         }
