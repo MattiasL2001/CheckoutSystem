@@ -4,13 +4,13 @@ namespace Checkout_System
     public class App
     {
         public static string receiptFilePath =
-        "C:\\Users\\Matti\\OneDrive\\Skrivbord\\RECEIPT" + DateTime.Today.ToString("yyyyMMdd") + ".txt";
+        "RECEIPT" + DateTime.Today.ToString("yyyyMMdd") + ".txt";
 
         public static string productsFilePath =
-        "C:\\Users\\Matti\\OneDrive\\Skrivbord\\" + "Products" + ".txt";
+        "Products" + ".txt";
 
         public static string campaignsFilePath =
-        "C:\\Users\\Matti\\OneDrive\\Skrivbord\\" + "Campaigns" + ".txt";
+        "Campaigns" + ".txt";
         List<Product> listOfProducts = new List<Product>();
         List<ReceiptObject> receiptProducts = new List<ReceiptObject>();
         Receipt receipt;

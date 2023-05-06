@@ -27,18 +27,16 @@ namespace Checkout_System
                     try
                     {
                         File.WriteAllText(directory + "\\" + fileName + ".txt", "");
+                        filePath = directory + "\\" + fileName + ".txt";
+                        Console.WriteLine("Directory changed to:");
+                        Console.WriteLine(filePath);
+                        return "back";
                     }
                     catch
                     {
                         Console.WriteLine("Access denied to that directory, choose another one:");
                         Console.WriteLine(new UnauthorizedAccessException());
-                        ChangeFileDirectory();
                     }
-
-                    filePath = directory + "\\" + fileName + ".txt";
-                    Console.WriteLine("Directory changed to:");
-                    Console.WriteLine(filePath);
-                    return "";
                 }
                 else
                 {
