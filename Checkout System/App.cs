@@ -3,8 +3,8 @@ namespace Checkout_System
 {
     public class App
     {
-        public static string receiptFilePath =
-        "RECEIPT" + DateTime.Today.ToString("yyyyMMdd") + ".txt";
+        //public static string receiptFilePath =
+        //"RECEIPT" + DateTime.Today.ToString("yyyyMMdd") + ".txt";
 
         public static string productsFilePath =
         "Products" + ".txt";
@@ -264,10 +264,7 @@ namespace Checkout_System
                 }
                 else
                 {
-                    FileAndFormat.ProductsToFile(listOfProducts, productsFilePath);
-                    string receiptString = FileAndFormat.ReceiptToFile(receipt, receiptFilePath);
-                    File.WriteAllText(receiptFilePath, File.ReadAllText(receiptFilePath) + receiptString);
-                    FileAndFormat.FileToReceipt(receiptFilePath);
+                    FileAndFormat.ReceiptToFile(receipt);
                     Run();
                     break;
                 }

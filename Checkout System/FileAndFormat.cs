@@ -165,7 +165,7 @@ namespace Checkout_System
             return Convert.ToInt32(serialNumber);
         }
 
-        public static string ReceiptToFile(Receipt receipt, string receiptFilePath)
+        public static string ReceiptFileToString(Receipt receipt, string receiptFilePath)
         {
             double price = 0;
             string stringBuilder = "";
@@ -207,14 +207,13 @@ namespace Checkout_System
             stringBuilder += "----------------------------------" + "\n";
             return stringBuilder;
         }
-        public static void FileToReceipt(string filePath)
+        public static void ReceiptToFile(Receipt receipt)
         {
-            string fileContent = File.ReadAllText(filePath);
+            string receiptFilePath = "RECEIPT" + DateTime.Today.ToString("yyyyMMdd") + ".txt";
 
-            fileContent = fileContent.Replace("},", "");
-            fileContent = fileContent.Replace("}", "");
-            fileContent = fileContent.Replace("{", "");
-            fileContent = fileContent.Replace("\n", "");
+            string receiptString = ReceiptFileToString(receipt, receiptFilePath);
+            File.WriteAllText(receiptFilePath, File.ReadAllText(receiptFilePath) + receiptString);
+            receipt.ProductList.Clear();
         }
 
         public static List<Campaign> FileToCampaigns(string filePath)
