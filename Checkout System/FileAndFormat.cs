@@ -167,7 +167,7 @@ namespace Checkout_System
 
         public static string ReceiptFileToString(Receipt receipt, string receiptFilePath)
         {
-            double price = 0;
+            double totalPrice = 0;
             string stringBuilder = "";
             int serialNumber = GetPreviousSerialNumber(receiptFilePath) + 1;
             stringBuilder += "RECEIPT: " + DateTime.Now + "\n";
@@ -175,35 +175,34 @@ namespace Checkout_System
 
             receipt.ProductList.ForEach(receiptObject =>
             {
+                var product = receiptObject.Product;
+                double price = product.Price;
+                List<Campaign> campaignList = GetCampaignsForProduct(product.ID);
+
+                campaignList.ForEach(campaign =>
+                {
+                    double discount = 0.01 * (100 - campaign.DiscountPercent);
+                    stringBuilder += $"CAMPAIGN: {campaign.Title}, {campaign.DiscountPercent}% OFF\n";
+                    stringBuilder += $"Price: {price} * {discount} = {price * discount}\n";
+                    price *= discount;
+                });
+
                 if (receiptObject.Product.PriceType == Product.PriceTypes.PricePerKG)
                 {
-                    var p = receiptObject.Product;
-                    double oldPrice = p.Price;
-                    List<Campaign> campaignList = GetCampaignsForProduct(p.ID);
-
-                    campaignList.ForEach(campaign =>
-                    {
-                        double discount = 0.01 * (100 - campaign.DiscountPercent);
-                        double newPrice = oldPrice - (oldPrice * campaign.DiscountPercent * 0.01);
-                        stringBuilder += $"CAMPAIGN: {campaign.Title}, {campaign.DiscountPercent}% OFF\n";
-                        stringBuilder += $"Price: {oldPrice} * {discount} = {newPrice}\n";
-                        oldPrice = newPrice;
-                    });
-
-                    price = p.Price * p.Weight;
-                    stringBuilder += $"{p.Name} {oldPrice}kr/kg x {p.Weight.ToString("0.0")}kg";
-                    stringBuilder += $" = {price}kr\n";
+                    totalPrice += product.Price * product.Weight;
+                    stringBuilder += $"{product.Name} {price}kr/kg x {product.Weight.ToString("0.0")}kg";
+                    stringBuilder += $" = {totalPrice}kr\n";
                 }
                 else
                 {
-                    price += receiptObject.Quantity * receiptObject.Product.Price;
+                    totalPrice += receiptObject.Quantity * price;
                     stringBuilder +=
-                    $"{receiptObject.Product.Name} {receiptObject.Quantity} x {receiptObject.Product.Price}kr";
-                    stringBuilder += $" = {price}kr\n";
+                    $"{receiptObject.Product.Name} {receiptObject.Quantity} x {price}kr";
+                    stringBuilder += $" = {totalPrice}kr\n";
                 }
             });
 
-            stringBuilder += $"Total: {price}kr\n";
+            stringBuilder += $"Total: {totalPrice}kr\n";
             stringBuilder += "----------------------------------" + "\n";
             return stringBuilder;
         }
