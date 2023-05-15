@@ -211,26 +211,29 @@ namespace Checkout_System
                 {
                     double discount = 0.01 * (100 - campaign.DiscountPercent);
                     stringBuilder += $"CAMPAIGN: {campaign.Title}, {campaign.DiscountPercent}% OFF\n";
-                    stringBuilder += $"Price: {price} * {discount} = {price * discount}\n";
+                    stringBuilder += $"Price: {price} * {Math.Round(discount, 2)} = {price * discount}\n";
                     price *= discount;
                 });
 
                 if (receiptObject.Product.PriceType == Product.PriceTypes.PricePerKG)
                 {
+                    var weightRounded = Math.Round(product.Weight, 3);
                     totalPrice += price * Convert.ToDouble(product.Weight) * receiptObject.Quantity;
-                    stringBuilder += $"{product.Name} {price}kr/kg x {product.Weight * receiptObject.Quantity}kg";
-                    stringBuilder += $" = {price * Convert.ToDouble(product.Weight) * receiptObject.Quantity}kr\n";
+                    stringBuilder += $"{product.Name} {price}kr/kg x ";
+                    stringBuilder += $"{ Math.Round(product.Weight * receiptObject.Quantity, 3)}kg";
+                    stringBuilder +=
+                    $" = {Math.Round(price * Convert.ToDouble(product.Weight) * receiptObject.Quantity, 3)}kr\n";
                 }
                 else
                 {
                     totalPrice += receiptObject.Quantity * price;
                     stringBuilder +=
-                    $"{receiptObject.Product.Name} {receiptObject.Quantity} x {price}kr";
+                    $"{receiptObject.Product.Name} {receiptObject.Quantity} x {price}";
                     stringBuilder += $" = {receiptObject.Quantity * price}kr\n";
                 }
             });
 
-            stringBuilder += $"Total: {totalPrice}kr\n";
+            stringBuilder += $"Total: {Math.Round(totalPrice, 3)}kr\n";
             stringBuilder += "----------------------------------" + "\n";
             return stringBuilder;
         }
