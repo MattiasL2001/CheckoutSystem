@@ -219,14 +219,14 @@ namespace Checkout_System
                 {
                     totalPrice += price * Convert.ToDouble(product.Weight) * receiptObject.Quantity;
                     stringBuilder += $"{product.Name} {price}kr/kg x {product.Weight * receiptObject.Quantity}kg";
-                    stringBuilder += $" = {totalPrice}kr\n";
+                    stringBuilder += $" = {price * Convert.ToDouble(product.Weight) * receiptObject.Quantity}kr\n";
                 }
                 else
                 {
                     totalPrice += receiptObject.Quantity * price;
                     stringBuilder +=
                     $"{receiptObject.Product.Name} {receiptObject.Quantity} x {price}kr";
-                    stringBuilder += $" = {totalPrice}kr\n";
+                    stringBuilder += $" = {receiptObject.Quantity * price}kr\n";
                 }
             });
 
