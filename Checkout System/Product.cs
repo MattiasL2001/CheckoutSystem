@@ -7,7 +7,7 @@ namespace Checkout_System
 
         public int ID;
         public double Price;
-        public float Weight;
+        public decimal Weight;
         public PriceTypes PriceType;
         public string Name;
 
@@ -19,7 +19,7 @@ namespace Checkout_System
             Name = name;
         }
 
-        public Product(int id, double price, PriceTypes priceType, string name, float weight)
+        public Product(int id, double price, PriceTypes priceType, string name, decimal weight)
         {
             ID = id;
             Price = price;

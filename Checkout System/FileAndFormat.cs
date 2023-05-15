@@ -110,7 +110,7 @@ namespace Checkout_System
                     else
                     {
                         productPriceType = Product.PriceTypes.PricePerKG;
-                        float weight = ConvertWeightToFloat(prodString.Split(",")[4]);
+                        decimal weight = ConvertWeightToFloat(prodString.Split(",")[4]);
                         products.Add(new Product(productId, productPrice, productPriceType, productName, weight));
                     }
                 }
@@ -133,7 +133,7 @@ namespace Checkout_System
                 else
                 {
                     productPriceType = Product.PriceTypes.PricePerKG;
-                    float weight = ConvertWeightToFloat(fileContent.Split(",")[4]);
+                    decimal weight = ConvertWeightToFloat(fileContent.Split(",")[4]);
                     products.Add(new Product(productID, productPrice, productPriceType, productName, weight));
                 }
             }
@@ -146,11 +146,11 @@ namespace Checkout_System
             return products;
         }
 
-        static float ConvertWeightToFloat(string weight)
+        static decimal ConvertWeightToFloat(string weight)
         {
             if (weight.Contains(".")) { weight = weight.Replace(".", ","); }
 
-            return Convert.ToSingle(weight);
+            return Convert.ToDecimal(weight);
         }
 
         public static void ClearProducts(string filePath)
@@ -217,8 +217,8 @@ namespace Checkout_System
 
                 if (receiptObject.Product.PriceType == Product.PriceTypes.PricePerKG)
                 {
-                    totalPrice += product.Price * product.Weight;
-                    stringBuilder += $"{product.Name} {price}kr/kg x {product.Weight.ToString("0.0")}kg";
+                    totalPrice += price * Convert.ToDouble(product.Weight) * receiptObject.Quantity;
+                    stringBuilder += $"{product.Name} {price}kr/kg x {product.Weight * receiptObject.Quantity}kg";
                     stringBuilder += $" = {totalPrice}kr\n";
                 }
                 else

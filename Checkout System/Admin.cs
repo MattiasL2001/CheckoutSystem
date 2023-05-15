@@ -58,10 +58,10 @@ namespace Checkout_System
                         Console.WriteLine("Input weight per each item in KG!");
                         string answer = Console.ReadLine();
 
-                        if (float.TryParse(answer, out float floatAnswer))
+                        if (decimal.TryParse(answer, out decimal decimalAnswer))
                         {
                             Console.WriteLine("Product weight set!");
-                            product.Weight = floatAnswer;
+                            product.Weight = decimalAnswer;
                             break;
                         }
                         else { Console.WriteLine("Could not regognize input as a float!"); }

@@ -240,7 +240,12 @@ namespace Checkout_System
 
                         listOfProducts.ForEach(prod =>
                         {
-                            if (prod.ID == id)
+                            if (prod.ID == id && prod.PriceType == Product.PriceTypes.PricePerKG)
+                            {
+                                productExists = true;
+                                product = new Product(prod.ID, prod.Price, prod.PriceType, prod.Name, prod.Weight);
+                            }
+                            else if (prod.ID == id)
                             {
                                 productExists = true;
                                 product = new Product(prod.ID, prod.Price, prod.PriceType, prod.Name);
