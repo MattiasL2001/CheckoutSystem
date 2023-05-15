@@ -230,6 +230,7 @@ namespace Checkout_System
 
                 if (answer.ToLower() != "pay")
                 {
+                    listOfProducts = FileAndFormat.FileToProducts(productsFilePath);
                     answerSplit = answer.Split(" ");
 
                     try
