@@ -49,7 +49,26 @@ namespace Checkout_System
                 input = Console.ReadLine().Trim();
 
                 if (input == "1") { product.PriceType = Product.PriceTypes.PricePerUnit; break; }
-                else if (input == "2") { product.PriceType = Product.PriceTypes.PricePerKG; break; }
+                else if (input == "2")
+                {
+                    product.PriceType = Product.PriceTypes.PricePerKG;
+
+                    while (true)
+                    {
+                        Console.WriteLine("Input weight per each item in KG!");
+                        string answer = Console.ReadLine();
+
+                        if (float.TryParse(answer, out float floatAnswer))
+                        {
+                            Console.WriteLine("Product weight set!");
+                            product.Weight = floatAnswer;
+                            break;
+                        }
+                        else { Console.WriteLine("Could not regognize input as a float!"); }
+                    }
+
+                    break;
+                }
                 else { Console.WriteLine("Invalid input!"); }
             }
 

@@ -55,8 +55,17 @@ namespace Checkout_System
                 stringBuilder += list[i].ID + ",\n   ";
                 stringBuilder += list[i].Price + ",\n   ";
                 stringBuilder += list[i].Name + ",\n   ";
-                stringBuilder += list[i].PriceType + "\n";
-                stringBuilder += "}";
+                stringBuilder += list[i].PriceType;
+
+                if (list[i].PriceType == Product.PriceTypes.PricePerKG)
+                {
+                    stringBuilder += ",\n   ";
+                    string stringWeight = list[i].Weight.ToString();
+                    stringWeight = stringWeight.Replace(",", ".");
+                    stringBuilder += stringWeight;
+                }
+
+                stringBuilder += "\n}";
 
                 if (list.Count > 1 && i + 1 < list.Count) { stringBuilder += ",\n"; }
             }
@@ -94,10 +103,16 @@ namespace Checkout_System
                     Product.PriceTypes productPriceType;
 
                     if (prodString.Split(",")[3].Contains("Unit"))
-                    { productPriceType = Product.PriceTypes.PricePerUnit; }
-                    else { productPriceType = Product.PriceTypes.PricePerKG; };
-
-                    products.Add(new Product(productId, productPrice, productPriceType, productName));
+                    {
+                        productPriceType = Product.PriceTypes.PricePerUnit;
+                        products.Add(new Product(productId, productPrice, productPriceType, productName));
+                    }
+                    else
+                    {
+                        productPriceType = Product.PriceTypes.PricePerKG;
+                        float weight = ConvertWeightToFloat(prodString.Split(",")[4]);
+                        products.Add(new Product(productId, productPrice, productPriceType, productName, weight));
+                    }
                 }
             }
             else if (fileContent != "")
@@ -111,10 +126,16 @@ namespace Checkout_System
                 Product.PriceTypes productPriceType = new Product.PriceTypes();
 
                 if (fileContent.Split(",")[3].Contains("Unit"))
-                { productPriceType = Product.PriceTypes.PricePerUnit; }
-                else { productPriceType = Product.PriceTypes.PricePerKG; };
-
-                products.Add(new Product(productID, productPrice, productPriceType, productName));
+                {
+                    productPriceType = Product.PriceTypes.PricePerUnit;
+                    products.Add(new Product(productID, productPrice, productPriceType, productName));
+                }
+                else
+                {
+                    productPriceType = Product.PriceTypes.PricePerKG;
+                    float weight = ConvertWeightToFloat(fileContent.Split(",")[4]);
+                    products.Add(new Product(productID, productPrice, productPriceType, productName, weight));
+                }
             }
 
             fileContent = fileContent.Replace("},", "");
@@ -123,6 +144,13 @@ namespace Checkout_System
             fileContent = fileContent.Replace("\n", "");
 
             return products;
+        }
+
+        static float ConvertWeightToFloat(string weight)
+        {
+            if (weight.Contains(".")) { weight = weight.Replace(".", ","); }
+
+            return Convert.ToSingle(weight);
         }
 
         public static void ClearProducts(string filePath)
