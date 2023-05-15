@@ -45,6 +45,15 @@ namespace Checkout_System
             }
         }
 
+        internal static decimal FormatNumber(decimal number, int numberOfDecimals)
+        {
+            string stringNumber = number.ToString();
+            if (!stringNumber.Contains(",")) { stringNumber += ","; }
+            stringNumber += "00000000000000000000000000000";
+            decimal newNumber = Math.Round(Convert.ToDecimal(stringNumber), numberOfDecimals);
+            return newNumber;
+        }
+
         public static void ProductsToFile(List<Product> list, string productsFilePath)
         {
             string stringBuilder = "";
@@ -60,8 +69,9 @@ namespace Checkout_System
                 if (list[i].PriceType == Product.PriceTypes.PricePerKG)
                 {
                     stringBuilder += ",\n   ";
-                    string stringWeight = list[i].Weight.ToString();
+                    string stringWeight = FormatNumber(list[i].Weight, 3).ToString();
                     stringWeight = stringWeight.Replace(",", ".");
+
                     stringBuilder += stringWeight;
                 }
 
@@ -211,7 +221,8 @@ namespace Checkout_System
                 {
                     double discount = 0.01 * (100 - campaign.DiscountPercent);
                     stringBuilder += $"CAMPAIGN: {campaign.Title}, {campaign.DiscountPercent}% OFF\n";
-                    stringBuilder += $"Price: {price} * {Math.Round(discount, 2)} = {price * discount}\n";
+                    stringBuilder += $"Price: {Math.Round(price, 2)} * {Math.Round(discount, 2)} = ";
+                    stringBuilder += $"{Math.Round(price * discount, 2)}\n";
                     price *= discount;
                 });
 
@@ -219,10 +230,10 @@ namespace Checkout_System
                 {
                     var weightRounded = Math.Round(product.Weight, 3);
                     totalPrice += price * Convert.ToDouble(product.Weight) * receiptObject.Quantity;
-                    stringBuilder += $"{product.Name} {price}kr/kg x ";
+                    stringBuilder += $"{product.Name} {Math.Round(price, 2)}kr/kg x ";
                     stringBuilder += $"{ Math.Round(product.Weight * receiptObject.Quantity, 3)}kg";
                     stringBuilder +=
-                    $" = {Math.Round(price * Convert.ToDouble(product.Weight) * receiptObject.Quantity, 3)}kr\n";
+                    $" = {Math.Round(price * Convert.ToDouble(product.Weight) * receiptObject.Quantity, 2)}kr\n";
                 }
                 else
                 {
@@ -233,7 +244,7 @@ namespace Checkout_System
                 }
             });
 
-            stringBuilder += $"Total: {Math.Round(totalPrice, 3)}kr\n";
+            stringBuilder += $"Total: {Math.Round(totalPrice, 2)}kr\n";
             stringBuilder += "----------------------------------" + "\n";
             return stringBuilder;
         }
