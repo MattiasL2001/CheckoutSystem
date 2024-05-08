@@ -58,7 +58,7 @@ namespace Checkout_System
                 Console.WriteLine("3. To change product price");
                 Console.WriteLine("4. To change product name");
                 Console.WriteLine("5. To add product campaign");
-                Console.WriteLine("'Back' to go back to main menu");
+                Console.WriteLine("Input 'Back' to go to the main menu.");
                 string answer = Console.ReadLine();
                 if (answer.ToLower() == "back")
                 {
@@ -224,9 +224,16 @@ namespace Checkout_System
             while (true)
             {
                 Console.WriteLine("Add products below: <product id> <quantity>");
+                Console.WriteLine("Input 'Back' to go to the main menu.");
                 string answer = Console.ReadLine();
                 string[] answerSplit;
                 Product product = null;
+
+                if (answer.ToLower() == "back")
+                {
+                    Run();
+                    break;
+                }
 
                 if (answer.ToLower() != "pay")
                 {
