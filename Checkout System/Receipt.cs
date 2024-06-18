@@ -24,7 +24,13 @@ namespace Checkout_System
         public object GetProduct(int index)
         {
             if (ProductList.Count >= index) { return ProductList[index].Product; }
-            else { Console.WriteLine("Error: Index out of bounds!"); return null; }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Error: Index out of bounds!");
+                Console.ResetColor();
+                return null;
+            }
         }
     }
 }

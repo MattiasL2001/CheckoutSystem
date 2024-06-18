@@ -30,6 +30,16 @@ namespace Checkout_System
         }
         public void Run()
         {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("   _____ _               _               _      _____           _                 \r\n" +
+                              "  / ____| |             | |             | |    / ____|         | |                \r\n" +
+                              " | |    | |__   ___  ___| | _____  _   _| |_  | (___  _   _ ___| |_ ___ _ __ ___  \r\n" +
+                              " | |    | '_ \\ / _ \\/ __| |/ / _ \\| | | | __|  \\___ \\| | | / __| __/ _ \\ '_ ` _ \\ \r\n" +
+                              " | |____| | | |  __/ (__|   < (_) | |_| | |_   ____) | |_| \\__ \\ ||  __/ | | | | |\r\n" +
+                              "  \\_____|_| |_|\\___|\\___|_|\\_\\___/ \\__,_|\\__| |_____/ \\__, |___/\\__\\___|_| |_| |_|\r\n" +
+                              "                                                       __/ |                      \r\n" +
+                              "                                                      |___/                       ");
+            Console.ResetColor();
             Console.WriteLine("Checkout:");
             Console.WriteLine("1. New checkout");
             Console.WriteLine("2. Change file directory");
@@ -118,7 +128,12 @@ namespace Checkout_System
                                 productCast.Price = intPrice;
                                 break;
                             }
-                            else { Console.WriteLine("Could not recognize input as an integer!"); }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Could not recognize input as an integer!");
+                                Console.ResetColor();
+                            }
                         }
 
                         newProductList.Add(productCast);
@@ -126,7 +141,9 @@ namespace Checkout_System
                     }
                     else
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Could not find any product with the given id or name!");
+                        Console.ResetColor();
                     }
                 }
 
@@ -164,7 +181,9 @@ namespace Checkout_System
                     else
                     {
                         Console.WriteLine(product);
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Could not find any product with the given id or name!");
+                        Console.ResetColor();
                     }
                 }
 
@@ -181,7 +200,9 @@ namespace Checkout_System
 
                         if (!int.TryParse(productID, out id))
                         {
-                            Console.WriteLine("Could recognize input as an integer!");
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Could not recognize input as an integer!");
+                            Console.ResetColor();
                             continue;
                         }
 
@@ -189,7 +210,12 @@ namespace Checkout_System
                         {
                             break;
                         }
-                        else { Console.WriteLine("No product with the given ID exists!"); }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("No product with the given ID exists!");
+                            Console.ResetColor();
+                        }
                     }
 
                     while(true)
@@ -201,7 +227,12 @@ namespace Checkout_System
                             discountPercent = discount;
                             break;
                         }
-                        else { Console.WriteLine("Could recognize input as an integer!"); }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Could not recognize input as an integer!");
+                            Console.ResetColor();
+                        }
                     }
 
                     Console.WriteLine("Enter a title for the campaign!");
@@ -262,7 +293,9 @@ namespace Checkout_System
 
                         if (!productExists)
                         {
+                            Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine("Could not find any product with the given id!");
+                            Console.ResetColor();
                         }
                         else if (product != null)
                         {
@@ -272,7 +305,9 @@ namespace Checkout_System
                     }
                     catch
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("ERROR (wrong input-format)");
+                        Console.ResetColor();
                     }
                 }
                 else

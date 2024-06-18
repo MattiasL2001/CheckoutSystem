@@ -16,13 +16,17 @@ namespace Checkout_System
 
                 if (!int.TryParse(input, out int intInput))
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Could not recognize input as an integer!");
+                    Console.ResetColor();
                     continue;
                 }
 
                 if (CheckIfProductExists(Convert.ToInt32(input)))
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("A product with the given ID already exists!");
+                    Console.ResetColor();
                     continue;
                 }
 
@@ -36,7 +40,9 @@ namespace Checkout_System
                 input = Console.ReadLine();
                 if (CheckIfProductExists(input))
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("A product with the given name already exists!");
+                    Console.ResetColor();
                 }
                 else { product.Name = input; break; }
             }
@@ -64,12 +70,22 @@ namespace Checkout_System
                             product.Weight = decimalAnswer;
                             break;
                         }
-                        else { Console.WriteLine("Could not regognize input as a float!"); }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Could not regognize input as a float!");
+                            Console.ResetColor();
+                        }
                     }
 
                     break;
                 }
-                else { Console.WriteLine("Invalid input!"); }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid input!");
+                    Console.ResetColor();
+                }
             }
 
             while (true)
@@ -78,7 +94,12 @@ namespace Checkout_System
                 input = Console.ReadLine();
 
                 if (int.TryParse(input, out int output)) { product.Price = output; break; }
-                else { Console.WriteLine("Could not recognize input as an integer!"); }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Could not recognize input as an integer!");
+                    Console.ResetColor();
+                }
             }
 
             products = FileAndFormat.FileToProducts(App.productsFilePath);
@@ -136,7 +157,9 @@ namespace Checkout_System
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("No product with the given ID exists!");
+                Console.ResetColor();
             }
         }
 
@@ -162,14 +185,21 @@ namespace Checkout_System
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("No product with the given name exists!");
+                Console.ResetColor();
             }
         }
 
         public static void ChangeProductPrice(int id)
         {
             List<Product> products = FileAndFormat.FileToProducts(App.productsFilePath);
-            if (products.Count < id) { Console.WriteLine("Error: ID is out of bounds"); }
+            if (products.Count < id)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Error: ID is out of bounds");
+                Console.ResetColor();
+            }
         }
 
         public static void ChangeProductName(string name)
@@ -194,7 +224,9 @@ namespace Checkout_System
                 }
                 else
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("No products with the given name exists!");
+                    Console.ResetColor();
                 }
             }
         }

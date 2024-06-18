@@ -15,7 +15,12 @@ namespace Checkout_System
         public Campaign(int id, int discountPercent, string title)
         {
             if (discountPercent > 100) { discountPercent = 100; }
-            if (discountPercent == 0) { throw new Exception("You can not add a new campaign without a discount!"); }
+            if (discountPercent == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("You can not add a new campaign without a discount!");
+                Console.ResetColor();
+            }
 
             ID = id;
             DiscountPercent = discountPercent;

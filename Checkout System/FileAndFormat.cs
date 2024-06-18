@@ -34,13 +34,17 @@ namespace Checkout_System
                     }
                     catch
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Access denied to that directory, choose another one:");
                         Console.WriteLine(new UnauthorizedAccessException());
+                        Console.ResetColor();
                     }
                 }
                 else
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("You must enter a VALID directory that exists!");
+                    Console.ResetColor();
                 }
             }
         }
@@ -171,9 +175,11 @@ namespace Checkout_System
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("The file:");
                 Console.WriteLine(filePath);
                 Console.WriteLine("does not exist!");
+                Console.ResetColor();
             }
         }
 
